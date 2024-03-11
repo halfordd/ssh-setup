@@ -6,6 +6,9 @@ platform=`uname`
 
 if [[ $platform == "Darwin" ]]; then
     echo "You appear to be using a Mac."
+elif [[ ${platform:0:7} == "MINGW64" ]]; then
+    echo "You appear to be running bash on Windows, perhaps with Git-bash."
+    platform="${platform:0:7}"
 else
     echo "Your platform appeas to be ${platform}."
 fi
@@ -34,6 +37,13 @@ if [[ -d ${HOME}/.ssh ]]; then
     echo
 else
     echo "You do NOT have a SSH folder in your home directory."
+    echo Attempting to create a SSH folder for you:
+    if mkdir ${HOME}/.ssh; then
+        echo "SUCCESS"
+    else
+        echo "FAILED: Could not create folder ${HOME}/.ssh  Please call a helper."
+        exit
+    fi
 fi
 
 # PERMISSION CHECK
@@ -41,6 +51,15 @@ fi
 echo
 echo "Testing if your SSH directory is accessible."
 echo "This can fail if your home directory is on a network to which you are not directly connected."
+echo
+
+if touch ${HOME}/.ssh/iamatestfile123; then
+    echo "SUCCESS"
+    rm ${HOME}/.ssh/iamatestfile123
+else
+    echo "FAILED: Your SSH folder is not writable. Please call a session helper."
+    exit
+fi
 
 # Implement permission check
 
@@ -53,4 +72,21 @@ else
     exit 1
 fi
 
-echo "Creating key"
+echo "Creating key:"
+
+keyname="`date +%g%m`-SCW-key"
+
+while [[ -e ${HOME}/.ssh/${keyname} ]]; do
+    keyname="${keyname}a"
+done
+
+if ssh-keygen -f ${HOME}/.ssh/${keyname} -N "" -t ed25519; then
+    echo "KEY GENERATED SUCCESSFULLY."
+    echo "The public key to copy into your github profile is:"
+    cat ${HOME}/.ssh/${keyname}.pub
+else
+    echo "FAILED."
+    echo "Something went wrong at the final step. Please call a helper."
+fi
+
+
