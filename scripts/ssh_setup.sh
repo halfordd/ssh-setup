@@ -3,7 +3,7 @@
 # TODO:
 # 1. Capture user name and email,  and include email in cert DONE
 # 2. Set git defaults for platform DONE
-# 3. Open github new key page
+# 3. Open github new key page DONE
 # 4. Work on automated workarounds for broken home folders
 
 echo "******************************"
