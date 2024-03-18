@@ -155,8 +155,11 @@ echo "Press enter when you have successfully added the key."
 
 
 # FIX FOR NON-MACS
-open https://github.com/settings/ssh/new
-
+if [[ $platform == "Darwin" ]]; then
+    open https://github.com/settings/ssh/new
+elif  command -v python; then
+    python -m webbrowser https://github.com/settings/ssh/new
+fi
 
 read -r confirm2
 
